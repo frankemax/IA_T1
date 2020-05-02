@@ -5,7 +5,7 @@ import java.io.FileNotFoundException;
 import java.util.Scanner;
 
 public class Labirinto {
-    String[][] lab;
+    private String[][] lab;
     
     public Labirinto() throws FileNotFoundException{
         File f = new File("lab10.txt");
@@ -20,12 +20,9 @@ public class Labirinto {
                 labirinto[i][j] = sc.next();
             }
         }
-        
-        for (int i = 0; i < tam; i++) {
-            for (int j = 0; j < tam; j++) {
-                System.out.print(labirinto[i][j]+" ");
-            }
-            System.out.println();
-        }
+    }
+    
+    public String[][] getLabirinto(){
+        return lab;
     }
 }
