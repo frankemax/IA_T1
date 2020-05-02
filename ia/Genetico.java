@@ -47,7 +47,7 @@ public class Genetico {
         int buraco = +100;
         int parede = +100;
         int anda = -1;
-
+        //todo
 
 
 
