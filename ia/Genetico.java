@@ -6,11 +6,22 @@ import java.util.ArrayList;
 
 public class Genetico {
 
-    String[][] lab = new Labirinto().getLabirinto();
+    private String[][] lab = new Labirinto().getLabirinto();
+    private ArrayList<ArrayList<Integer>> listList;
 
     public Genetico() throws FileNotFoundException {
 
-        startPopulation(5, 10);
+        int qtdadeDeGerações=20;
+        int lengthCaminhoInicial=5;
+        int qtdadeDeFilhos=50;
+
+        startPopulation(lengthCaminhoInicial, qtdadeDeFilhos);
+        for (int i = 0; i < qtdadeDeGerações; i++) {
+            //selectBest()
+            //generateNewandAdd5();
+        }
+
+
 
     }
 
@@ -26,7 +37,7 @@ public class Genetico {
 
         Random r = new Random();
 
-        ArrayList<ArrayList<Integer>> array = new ArrayList<ArrayList<Integer>>(vetQt);
+        this.listList = new ArrayList<ArrayList<Integer>>(vetQt);
 
         for (int i = 0; i < vetQt; i++) {
             ArrayList<Integer> list = new ArrayList<Integer>();
@@ -36,10 +47,10 @@ public class Genetico {
 
             }
             list.add(aptidaoCalc(list));
-            array.add(list);
+            listList.add(list);
 
         }
-        System.out.println(array);
+        System.out.println(listList);
     }
 
     private int aptidaoCalc(ArrayList<Integer> array) {
@@ -50,6 +61,7 @@ public class Genetico {
 
         int[] pos = {0, 0};
         int pts = 0;
+
         for (int i = 0; i < array.size(); i++) {
             int aux = array.get(i);
             String[] str = anda(pos, aux);
@@ -64,10 +76,6 @@ public class Genetico {
                     pts += saida;
                     return pts;
                 case "E":
-                    pts += anda;
-                    pos[0] = Integer.parseInt(str[1]);
-                    pos[1] = Integer.parseInt(str[2]);
-                    break;
                 case "0":
                     pts += anda;
                     pos[0] = Integer.parseInt(str[1]);
@@ -123,4 +131,6 @@ public class Genetico {
         String[] s = {lab[var[0]][var[1]] + "", var[0] + "", var[1] + ""};
         return s;
     }
+
+
 }
