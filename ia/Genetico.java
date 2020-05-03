@@ -56,10 +56,20 @@ public class Genetico {
     }
 
     private void crossover(){
+        Random r = new Random();
         int[] family = escolheElitismo();
         ArrayList<Integer> Pai = listList.get(family[0]);
         ArrayList<Integer> Mae = listList.get(family[1]);
 
+        int ponto = r.nextInt(Pai.size()/2);
+
+        ArrayList<Integer> filho1 = new ArrayList<Integer>(Pai);
+        ArrayList<Integer> filho2 = new ArrayList<Integer>(Mae);
+
+        for (int i = ponto; i < Pai.size() - ponto; i++) {
+                filho1.add(i, Mae.get(i));
+                filho2.add(i, Pai.get(i));
+        }
 
     }
 
