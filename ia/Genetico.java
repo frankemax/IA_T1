@@ -15,6 +15,8 @@ public class Genetico {
         int lengthCaminhoInicial=5;
         int qtdadeDeFilhos=50;
 
+
+
         startPopulation(lengthCaminhoInicial, qtdadeDeFilhos);
         for (int i = 0; i < qtdadeDeGerações; i++) {
             //selectBest()
@@ -52,6 +54,48 @@ public class Genetico {
         }
         System.out.println(listList);
     }
+
+    private void crossover(){
+        int[] family = escolheElitismo();
+        ArrayList<Integer> Pai = listList.get(family[0]);
+        ArrayList<Integer> Mae = listList.get(family[1]);
+
+
+    }
+
+    private int[] escolheElitismo(){
+        int posPai = 0;
+        int posMae = 0;
+
+        int valPai = listList.get(0).get(listList.size()-1);
+        int valMae = valPai;
+
+        int atual = 0;
+
+        for(int i = 0; i < listList.size() ; i++){
+            atual = listList.get(i).get(listList.size()-1);
+            if(atual >  valPai){
+                valPai = atual;
+                posPai = i;
+
+            }else{
+                if(atual > valMae && atual != valPai){
+                    valMae = atual;
+                    posMae = i;
+                }
+            }
+        }
+
+        int[] family = {posPai, posMae};
+        return family;
+    }
+
+
+
+
+
+
+
 
     private int aptidaoCalc(ArrayList<Integer> array) {
         int buraco = -10000;
