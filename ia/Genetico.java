@@ -8,18 +8,36 @@ public class Genetico {
 
     private String[][] lab = new Labirinto().getLabirinto();
     private ArrayList<ArrayList<Integer>> listList;
+    private ArrayList<ArrayList<Integer>> intermediaryListList;
 
     public Genetico() throws FileNotFoundException {
 
-        int qtdadeDeGerações=20;
-        int lengthCaminhoInicial=5;
+        int qtdadeDeGeracoes=20000;
+        int lengthCaminhoInicial=lab.length*lab.length;
         int qtdadeDeFilhos=50;
+
+        Random r = new Random();
+        this.intermediaryListList = new ArrayList<>();
 
 
 
         startPopulation(lengthCaminhoInicial, qtdadeDeFilhos);
-        for (int i = 0; i < qtdadeDeGerações; i++) {
-            //selectBest()
+
+        for (int i = 0; i < qtdadeDeGeracoes; i++) {
+
+            int[] aux = escolheElitismo();
+
+
+            intermediaryListList.add(new ArrayList<Integer>(listList.get(aux[0])));
+            intermediaryListList.add(new ArrayList<Integer>(listList.get(aux[1])));
+            crossoverTwo(aux);
+            for (int j = 0; j < (listList.size()/2)-1; j++) {
+                aux[0] = r.nextInt(listList.size());
+                aux[1] = r.nextInt(listList.size());
+                crossoverTwo(aux);
+
+            }
+
             //generateNewandAdd5();
         }
 
@@ -52,12 +70,12 @@ public class Genetico {
             listList.add(list);
 
         }
-        System.out.println(listList);
+        //System.out.println(listList);
     }
 
-    private void crossover(){
+    private void crossoverTwo(int[] family){
         Random r = new Random();
-        int[] family = escolheElitismo();
+
         ArrayList<Integer> Pai = listList.get(family[0]);
         ArrayList<Integer> Mae = listList.get(family[1]);
 
@@ -70,6 +88,9 @@ public class Genetico {
                 filho1.add(i, Mae.get(i));
                 filho2.add(i, Pai.get(i));
         }
+        intermediaryListList.add(filho1);
+        intermediaryListList.add(filho2);
+
 
     }
 
@@ -97,6 +118,7 @@ public class Genetico {
         }
 
         int[] family = {posPai, posMae};
+
         return family;
     }
 
@@ -111,7 +133,7 @@ public class Genetico {
         int buraco = -10000;
         int parede = -100;
         int anda = -1;
-        int saida = 10000;
+        int saida = 1000000000;
 
         int[] pos = {0, 0};
         int pts = 0;
@@ -138,6 +160,9 @@ public class Genetico {
             }
         }
 
+        if(pts > 0){
+            System.out.println(pts);
+        }
         return pts;
     }
 
