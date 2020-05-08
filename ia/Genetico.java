@@ -9,28 +9,15 @@ public class Genetico {
     private String[][] lab = new Labirinto().getLabirinto();
     private ArrayList<ArrayList<Integer>> listList;
     private ArrayList<ArrayList<Integer>> intermediaryListList;
+    private int filho;
 
-    public Genetico() throws FileNotFoundException {
+    public Genetico(int filho, int qtdadeDeGeracoes, int lengthCaminhoInicial,  int qtdadeDeFilhos) throws FileNotFoundException {
 
-        int qtdadeDeGeracoes = 2000;
-        int lengthCaminhoInicial = lab.length * lab.length;
-        lengthCaminhoInicial = 20;
-        int qtdadeDeFilhos = 50;
-
+        this.filho = filho;
         Random r = new Random();
 
         startPopulation(lengthCaminhoInicial, qtdadeDeFilhos);
 
-       /* ArrayList<Integer> certo = new ArrayList<>();
-        certo.add(3);
-        certo.add(3);
-        certo.add(5);
-        certo.add(5);
-        certo.add(4);
-        certo.add(4);
-        certo.add(4);
-        certo.add(4);
-        System.out.println(aptidaoCalc(certo));*/
 
 
 
@@ -59,7 +46,7 @@ public class Genetico {
         System.out.println(listList);
     }
 
-    private void removeAll(){
+    private void removeAll() {
         for (int i = 0; i < listList.size(); i++) {
             listList.get(i).remove(listList.get(i).size() - 1);
         }
@@ -109,13 +96,16 @@ public class Genetico {
         mutagenico();
     }
 
-    private void mutagenico(){
+    private void mutagenico() {
         Random r = new Random();
-        int filho = r.nextInt(2);
+        int f = r.nextInt(filho);
+        if (f > 1) {
+            return;
+        }
         int pos = r.nextInt(intermediaryListList.get(0).size());
         int var = r.nextInt(8);
 
-        intermediaryListList.get(intermediaryListList.size()-filho-1).set(pos,var);
+        intermediaryListList.get(intermediaryListList.size() - f - 1).set(pos, var);
     }
 
     private int[] escolheElitismo() {
