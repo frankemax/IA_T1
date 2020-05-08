@@ -7,48 +7,56 @@ import java.util.ArrayList;
 public class Genetico {
 
     private String[][] lab = new Labirinto().getLabirinto();
-    private ArrayList<ArrayList<Integer>> listList;
-    private ArrayList<ArrayList<Integer>> intermediaryListList;
-    private int filho;
+    private ArrayList<ArrayList<Integer>> ListaLista;
+    private ArrayList<ArrayList<Integer>> intermediaryListaLista;
+    private double mutationRate;
+    private int qtdadeDeGeracoes;
+    private int qtdCromossomos;
+    private int qtdadeDeFilhos;
+    private boolean foundIt;
 
-    public Genetico(int filho, int qtdadeDeGeracoes, int lengthCaminhoInicial,  int qtdadeDeFilhos) throws FileNotFoundException {
+    public Genetico(double mutationRate, int qtdadeDeGeracoes, int qtdCromossomos, int qtdadeDeFilhos) throws FileNotFoundException {
 
-        this.filho = filho;
+        this.mutationRate = mutationRate;
+        this.qtdadeDeGeracoes = qtdadeDeGeracoes;
+        this.qtdCromossomos = qtdCromossomos;
+        this.qtdadeDeFilhos = qtdadeDeFilhos;
+        this.foundIt = false;
+
         Random r = new Random();
 
-        startPopulation(lengthCaminhoInicial, qtdadeDeFilhos);
-
-
+        startPopulation(qtdCromossomos, qtdadeDeFilhos);
 
 
         for (int i = 0; i < qtdadeDeGeracoes; i++) {
+            if(foundIt) return;
             System.out.println(i);
             int[] aux = escolheElitismo();
 
-            intermediaryListList = new ArrayList<>();
+            intermediaryListaLista = new ArrayList<>();
             removeAll();
 
-            intermediaryListList.add(new ArrayList<Integer>(listList.get(aux[0])));
-            intermediaryListList.add(new ArrayList<Integer>(listList.get(aux[1])));
+            intermediaryListaLista.add(new ArrayList<Integer>(ListaLista.get(aux[0])));
+            intermediaryListaLista.add(new ArrayList<Integer>(ListaLista.get(aux[1])));
             crossoverTwo(aux);
 
-            for (int j = 0; j < (listList.size() / 2) - 1; j++) {
-                aux[0] = r.nextInt(listList.size());
-                aux[1] = r.nextInt(listList.size());
+            for (int j = 0; j < (ListaLista.size() / 2) - 1; j++) {
+                aux[0] = r.nextInt(ListaLista.size());
+                aux[1] = r.nextInt(ListaLista.size());
                 crossoverTwo(aux);
             }
-            listList = intermediaryListList;
+            ListaLista = intermediaryListaLista;
 
-            for (int j = 0; j < listList.size(); j++) {
-                listList.get(j).add(aptidaoCalc(listList.get(j)));
+            for (int j = 0; j < ListaLista.size(); j++) {
+                ListaLista.get(j).add(aptidaoCalc(ListaLista.get(j)));
             }
         }
-        System.out.println(listList);
+        System.out.println(ListaLista);
     }
 
     private void removeAll() {
-        for (int i = 0; i < listList.size(); i++) {
-            listList.get(i).remove(listList.get(i).size() - 1);
+        for (int i = 0; i < ListaLista.size(); i++) {
+            ListaLista.get(i).remove(ListaLista.get(i).size() - 1);
         }
     }
 
@@ -64,7 +72,7 @@ public class Genetico {
 
         Random r = new Random();
 
-        this.listList = new ArrayList<ArrayList<Integer>>(vetQt);
+        this.ListaLista = new ArrayList<ArrayList<Integer>>(vetQt);
 
         for (int i = 0; i < vetQt; i++) {
             ArrayList<Integer> list = new ArrayList<Integer>();
@@ -73,15 +81,15 @@ public class Genetico {
                 list.add(r.nextInt(8));
             }
             list.add(aptidaoCalc(list));
-            listList.add(list);
+            ListaLista.add(list);
         }
     }
 
     private void crossoverTwo(int[] family) {
         Random r = new Random();
 
-        ArrayList<Integer> pai = listList.get(family[0]);
-        ArrayList<Integer> mae = listList.get(family[1]);
+        ArrayList<Integer> pai = ListaLista.get(family[0]);
+        ArrayList<Integer> mae = ListaLista.get(family[1]);
 
         int ponto = r.nextInt(pai.size() / 2);
 
@@ -91,33 +99,34 @@ public class Genetico {
             filho1.set(i, mae.get(i));
             filho2.set(i, pai.get(i));
         }
-        intermediaryListList.add(filho1);
-        intermediaryListList.add(filho2);
+        intermediaryListaLista.add(filho1);
+        intermediaryListaLista.add(filho2);
         mutagenico();
     }
 
     private void mutagenico() {
-        Random r = new Random();
-        int f = r.nextInt(filho);
-        if (f > 1) {
-            return;
-        }
-        int pos = r.nextInt(intermediaryListList.get(0).size());
-        int var = r.nextInt(8);
 
-        intermediaryListList.get(intermediaryListList.size() - f - 1).set(pos, var);
+        Random r = new Random();
+
+        int choose= r.nextInt(2);
+
+
+        for (int j = 0; j < mutationRate * qtdCromossomos; j++) {
+            intermediaryListaLista.get(intermediaryListaLista.size() - choose-1).set(r.nextInt(qtdCromossomos), r.nextInt(8));
+        }
+
     }
 
     private int[] escolheElitismo() {
         int posPai = 0;
         int posMae = 0;
-        int valPai = listList.get(0).get(listList.get(0).size() - 1);
+        int valPai = ListaLista.get(0).get(ListaLista.get(0).size() - 1);
         int valMae = valPai;
 
         int atual = 0;
 
-        for (int i = 0; i < listList.size(); i++) {
-            atual = listList.get(i).get(listList.get(i).size() - 1);
+        for (int i = 0; i < ListaLista.size(); i++) {
+            atual = ListaLista.get(i).get(ListaLista.get(i).size() - 1);
             if (atual > valPai) {
                 valPai = atual;
                 posPai = i;
@@ -156,6 +165,7 @@ public class Genetico {
                     break;
                 case "S":
                     pts += saida;
+                    foundIt=true;
                     System.out.println("monstro");
                     return pts;
                 case "E":
