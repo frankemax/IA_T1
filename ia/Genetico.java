@@ -22,7 +22,6 @@ public class Genetico {
         startPopulation(lengthCaminhoInicial, qtdadeDeFilhos);
 
        /* ArrayList<Integer> certo = new ArrayList<>();
-
         certo.add(3);
         certo.add(3);
         certo.add(5);
@@ -31,15 +30,14 @@ public class Genetico {
         certo.add(4);
         certo.add(4);
         certo.add(4);
-
         System.out.println(aptidaoCalc(certo));*/
-        
-        
-        
+
+
+
         for (int i = 0; i < qtdadeDeGeracoes; i++) {
             System.out.println(i);
             int[] aux = escolheElitismo();
-            
+
             intermediaryListList = new ArrayList<>();
             removeAll();
 
@@ -53,14 +51,14 @@ public class Genetico {
                 crossoverTwo(aux);
             }
             listList = intermediaryListList;
-            
+
             for (int j = 0; j < listList.size(); j++) {
                 listList.get(j).add(aptidaoCalc(listList.get(j)));
             }
         }
         System.out.println(listList);
     }
-    
+
     private void removeAll(){
         for (int i = 0; i < listList.size(); i++) {
             listList.get(i).remove(listList.get(i).size() - 1);
@@ -108,6 +106,16 @@ public class Genetico {
         }
         intermediaryListList.add(filho1);
         intermediaryListList.add(filho2);
+        mutagenico();
+    }
+
+    private void mutagenico(){
+        Random r = new Random();
+        int filho = r.nextInt(2);
+        int pos = r.nextInt(intermediaryListList.get(0).size());
+        int var = r.nextInt(8);
+
+        intermediaryListList.get(intermediaryListList.size()-filho-1).set(pos,var);
     }
 
     private int[] escolheElitismo() {
