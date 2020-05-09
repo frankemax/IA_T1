@@ -14,6 +14,7 @@ public class Genetico {
     private int qtdCromossomos;
     private int qtdadeDeFilhos;
     private boolean foundIt;
+    public int[] end = new int[2];
 
     public Genetico(double mutationRate, int qtdadeDeGeracoes, int qtdCromossomos, int qtdadeDeFilhos) throws FileNotFoundException {
 
@@ -167,6 +168,8 @@ public class Genetico {
                     pts += saida;
                     foundIt=true;
                     System.out.println("monstro");
+                    end[0] = Integer.parseInt(str[1]);
+                    end[1] = Integer.parseInt(str[2]);
                     return pts;
                 case "E":
                 case "0":
