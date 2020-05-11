@@ -232,17 +232,18 @@ public class Genetico {
             return;
         }
         foundIt = true;
-        
+
         String[][] print = new String[lab.length][lab.length];
         for (int i = 0; i < lab.length; i++) {
             for (int j = 0; j < lab.length; j++) {
                 print[i][j] = lab[i][j];
             }
         }
-        
+
         int[] pos = {0, 0};
         log += "Caminho percorrido:\n(0, 0) ";
-        loop:for (int i = 0; i < array.size(); i++) {
+        loop:
+        for (int i = 0; i < array.size(); i++) {
             int aux = array.get(i);
             String[] str = anda(pos, aux);
             switch (str[0]) {
@@ -260,8 +261,10 @@ public class Genetico {
         }
         for (int i = 0; i < lab.length; i++) {
             for (int j = 0; j < lab.length; j++) {
-                log += print[i][j]+ " ";
-            }log += "\n";
+                log += print[i][j] + " ";
+            }
+            log += "\n";
         }
     }
+
 }
