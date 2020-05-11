@@ -29,19 +29,17 @@ public class AStar {
     private int[] saida;
     private ArrayList<Node> open;
     private ArrayList<Node> closed;
+    public String str = "";
 
     public AStar(int[] entrada, int[] saida) throws FileNotFoundException {
         this.entrada = entrada;
         this.saida = saida;
         open = new ArrayList<>();
         closed = new ArrayList<>();
-        System.out.println(solve());
-        for (Node node : closed) {
-            //System.out.println(node.coord[0] + " " +node.coord[1]);
-        }
+        solve();
     }
 
-    public Node solve() {
+    private Node solve() {
         open.add(new Node(0, heuristica(0, 0, saida[0], saida[1]), entrada, null, "open"));
         Node current;
         for (int i = 0; i < lab.length * lab[0].length; i++) {
@@ -106,22 +104,29 @@ public class AStar {
 
     }
 
-    private void path(Node n) {System.out.println("k");
+    private void path(Node n) {
+        str += "\n\nMelhor saida encontrada pelo A*\n";
         String[][] print = new String[lab.length][lab.length];
         for (int i = 0; i < lab.length; i++) {
             for (int j = 0; j < lab.length; j++) {
                 print[i][j] = lab[i][j];
             }
         }
+
+        String path = "";
         while (n.ant != null) {
             print[n.coord[0]][n.coord[1]] = "X";
+            path = "(" + n.coord[0] + ", " + n.coord[1] + ") " + path;
             n = n.ant;
         }
+        path = "(0, 0) " + path;
         print[saida[0]][saida[1]] = "S";
+        str += path + "\n\n";
         for (int i = 0; i < lab.length; i++) {
             for (int j = 0; j < lab.length; j++) {
-                System.out.print(print[i][j]+ " ");
-            }System.out.println("");
+                str += print[i][j] + " ";
+            }
+            str += "\n";
         }
     }
 
