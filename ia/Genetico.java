@@ -15,6 +15,7 @@ public class Genetico {
     private int qtdadeDeFilhos;
     private boolean foundIt;
     public int[] end = new int[2];
+    public String log = "\n";
 
     public Genetico(double mutationRate, int qtdadeDeGeracoes, int qtdCromossomos, int qtdadeDeFilhos) throws FileNotFoundException {
 
@@ -28,10 +29,12 @@ public class Genetico {
 
         startPopulation(qtdCromossomos, qtdadeDeFilhos);
 
-
         for (int i = 0; i < qtdadeDeGeracoes; i++) {
-            if(foundIt) return;
-            System.out.println(i);
+            if (foundIt) {
+                log += "Saida encontrada na geracao " + (i - 1) + "\n";
+                return;
+            }
+            //System.out.println(i);
             int[] aux = escolheElitismo();
 
             intermediaryListaLista = new ArrayList<>();
@@ -52,7 +55,6 @@ public class Genetico {
                 ListaLista.get(j).add(aptidaoCalc(ListaLista.get(j)));
             }
         }
-        System.out.println(ListaLista);
     }
 
     private void removeAll() {
@@ -109,11 +111,10 @@ public class Genetico {
 
         Random r = new Random();
 
-        int choose= r.nextInt(2);
-
+        int choose = r.nextInt(2);
 
         for (int j = 0; j < mutationRate * qtdCromossomos; j++) {
-            intermediaryListaLista.get(intermediaryListaLista.size() - choose-1).set(r.nextInt(qtdCromossomos), r.nextInt(8));
+            intermediaryListaLista.get(intermediaryListaLista.size() - choose - 1).set(r.nextInt(qtdCromossomos), r.nextInt(8));
         }
 
     }
@@ -166,8 +167,7 @@ public class Genetico {
                     break;
                 case "S":
                     pts += saida;
-                    foundIt=true;
-                    System.out.println("monstro");
+                    path(array);
                     end[0] = Integer.parseInt(str[1]);
                     end[1] = Integer.parseInt(str[2]);
                     return pts;
@@ -227,4 +227,41 @@ public class Genetico {
         return s;
     }
 
+    private void path(ArrayList<Integer> array) {
+        if (foundIt) {
+            return;
+        }
+        foundIt = true;
+        
+        String[][] print = new String[lab.length][lab.length];
+        for (int i = 0; i < lab.length; i++) {
+            for (int j = 0; j < lab.length; j++) {
+                print[i][j] = lab[i][j];
+            }
+        }
+        
+        int[] pos = {0, 0};
+        log += "Caminho percorrido:\n(0, 0) ";
+        loop:for (int i = 0; i < array.size(); i++) {
+            int aux = array.get(i);
+            String[] str = anda(pos, aux);
+            switch (str[0]) {
+                case "S":
+                    log += "(" + str[1] + ", " + str[2] + ")\n";
+                    break loop;
+                case "E":
+                case "0":
+                    pos[0] = Integer.parseInt(str[1]);
+                    pos[1] = Integer.parseInt(str[2]);
+                    log += "(" + str[1] + ", " + str[2] + ") ";
+                    print[Integer.parseInt(str[1])][Integer.parseInt(str[2])] = "X";
+                    break;
+            }
+        }
+        for (int i = 0; i < lab.length; i++) {
+            for (int j = 0; j < lab.length; j++) {
+                log += print[i][j]+ " ";
+            }log += "\n";
+        }
+    }
 }
