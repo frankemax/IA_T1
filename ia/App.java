@@ -9,14 +9,14 @@ public class App {
     public static void main(String[] args) throws FileNotFoundException {
         File f = new File("saida.txt");
         PrintWriter pw = new PrintWriter(f);
-        Genetico gen = new Genetico(0.01, 2000, 20, 50);
+        Genetico gen = new Genetico(0.01, 2000, 200, 50);
         int[] in = {0, 0};
-        AStar a = new AStar(in, gen.end);
+        AStar a = new AStar(in, gen.getEnd());
         pw.print("Resultado:\n");
-        pw.print(gen.log);
-        pw.print(a.str);
-        System.out.println(gen.log);
-        System.out.println(a.str);
+        pw.print(gen.toString());
+        pw.print(a.toString());
+        System.out.println(gen.toString());
+        System.out.println(a.toString());
         pw.close();
     }
 }
