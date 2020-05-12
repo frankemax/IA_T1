@@ -7,69 +7,74 @@ import java.util.ArrayList;
 public class Genetico {
 
     private String[][] lab = new Labirinto().getLabirinto();
-    private ArrayList<ArrayList<Integer>> ListaLista, intermediaryListaLista;
+    private ArrayList<ArrayList<Integer>> populacao, populacaoIntermediaria;
     private double mutationRate;
-    private int qtdadeDeGeracoes, qtdCromossomos, qtdadeDeFilhos;
+    private int qtdadeDeGeracoes, tamanhoCromossomos, tamanhoPopulacao;
     private boolean foundIt;
     private int[] end = new int[2];
     private String log = "\n";
     private Random random = new Random();
 
-    public Genetico(double mutationRate, int qtdadeDeGeracoes, int qtdCromossomos, int qtdadeDeFilhos) throws FileNotFoundException {
+    public Genetico(double mutationRate, int qtdadeDeGeracoes, int tamanhoCromossomos, int tamanhoPopulacao, boolean detalhado) throws FileNotFoundException {
 
         this.mutationRate = mutationRate;
         this.qtdadeDeGeracoes = qtdadeDeGeracoes;
-        this.qtdCromossomos = qtdCromossomos;
-        this.qtdadeDeFilhos = qtdadeDeFilhos;
+        this.tamanhoCromossomos = tamanhoCromossomos;
+        this.tamanhoPopulacao = tamanhoPopulacao;
         this.foundIt = false;
 
-        startPopulation(qtdCromossomos, qtdadeDeFilhos);
+        startPopulation(tamanhoCromossomos, tamanhoPopulacao);
 
         for (int i = 0; i < qtdadeDeGeracoes; i++) {
             if (foundIt) {
                 log += "Saida encontrada na geracao " + (i - 1) + "\n";
-                log += "Tamanho agente: " + this.qtdCromossomos;
+                log += "Tamanho agente: " + this.tamanhoCromossomos;
                 return;
             }
+            System.out.println(i);
             int[] aux = escolheElitismo();
-            if (i % 1 == 0 && i > 0) {
-                log += "\nGeracao " + i + ":\n";
-                log += path(ListaLista.get(aux[0]), false) + "\n";
-                log += ("Pontuacao: " + ListaLista.get(aux[0]).get(ListaLista.get(aux[0]).size() - 1)) + "\n";
-                this.qtdCromossomos += 3;
+            if (i % 5 == 0 && i > 0) {
+                log += "\nGeracao " + i + ":\nMelhor agente:\n";
+                log += path(populacao.get(aux[0]), false) + "\n";
+                log += ("Pontuacao: " + populacao.get(aux[0]).get(populacao.get(aux[0]).size() - 1)) + "\n";
+                this.tamanhoCromossomos += 4;
+            } else {
+                if (detalhado) {
+                    log += "\nGeracao " + i + ":\nMelhor agente:\n";
+                    log += populacao.get(aux[0]) + "\n";
+                    log += path(populacao.get(aux[0]), false) + "\n";
+                    log += ("Pontuacao: " + populacao.get(aux[0]).get(populacao.get(aux[0]).size() - 1)) + "\nTamanho do agente: " + this.tamanhoCromossomos + "\n";
+                }
             }
 
-            intermediaryListaLista = new ArrayList<>();
+            populacaoIntermediaria = new ArrayList<>();
             removeAll();
 
-            ArrayList<Integer> lis1 = add(new ArrayList<Integer>(ListaLista.get(aux[0])));
-            ArrayList<Integer> lis2 = add(new ArrayList<Integer>(ListaLista.get(aux[1])));
-
-            intermediaryListaLista.add(lis1);
-            intermediaryListaLista.add(lis2);
+            populacaoIntermediaria.add(add(new ArrayList<Integer>(populacao.get(aux[0]))));
+            populacaoIntermediaria.add(add(new ArrayList<Integer>(populacao.get(aux[1]))));
             crossoverTwo(aux);
 
-            for (int j = 0; j < (ListaLista.size() / 2) - 1; j++) {
-                aux[0] = random.nextInt(ListaLista.size());
-                aux[1] = random.nextInt(ListaLista.size());
+            for (int j = 0; j < (populacao.size() / 2) - 1; j++) {
+                aux[0] = random.nextInt(populacao.size());
+                aux[1] = random.nextInt(populacao.size());
                 crossoverTwo(aux);
             }
-            ListaLista = intermediaryListaLista;
+            populacao = populacaoIntermediaria;
 
-            for (int j = 0; j < ListaLista.size(); j++) {
-                ListaLista.get(j).add(aptidaoCalc(ListaLista.get(j)));
+            for (int j = 0; j < populacao.size(); j++) {
+                populacao.get(j).add(aptidaoCalc(populacao.get(j)));
             }
         }
     }
 
     private void removeAll() {
-        for (int i = 0; i < ListaLista.size(); i++) {
-            ListaLista.get(i).remove(ListaLista.get(i).size() - 1);
+        for (int i = 0; i < populacao.size(); i++) {
+            populacao.get(i).remove(populacao.get(i).size() - 1);
         }
     }
 
     private ArrayList<Integer> add(ArrayList<Integer> array) {
-        for (int i = array.size(); i < qtdCromossomos; i++) {
+        for (int i = array.size(); i < tamanhoCromossomos; i++) {
             array.add(random.nextInt(8));
         }
         return array;
@@ -85,7 +90,7 @@ public class Genetico {
         //6-> ←
         //7-> ↖
 
-        this.ListaLista = new ArrayList<ArrayList<Integer>>(vetQt);
+        this.populacao = new ArrayList<ArrayList<Integer>>(vetQt);
 
         for (int i = 0; i < vetQt; i++) {
             ArrayList<Integer> list = new ArrayList<Integer>();
@@ -94,13 +99,13 @@ public class Genetico {
                 list.add(random.nextInt(8));
             }
             list.add(aptidaoCalc(list));
-            ListaLista.add(list);
+            populacao.add(list);
         }
     }
 
     private void crossoverTwo(int[] family) {
-        ArrayList<Integer> pai = ListaLista.get(family[0]);
-        ArrayList<Integer> mae = ListaLista.get(family[1]);
+        ArrayList<Integer> pai = populacao.get(family[0]);
+        ArrayList<Integer> mae = populacao.get(family[1]);
 
         int ponto = random.nextInt(pai.size() / 2);
 
@@ -110,29 +115,29 @@ public class Genetico {
             filho1.set(i, mae.get(i));
             filho2.set(i, pai.get(i));
         }
-        intermediaryListaLista.add(add(filho1));
-        intermediaryListaLista.add(add(filho2));
+        populacaoIntermediaria.add(add(filho1));
+        populacaoIntermediaria.add(add(filho2));
         mutagenico();
     }
 
     private void mutagenico() {
         int choose = random.nextInt(2);
 
-        for (int j = 0; j < mutationRate * qtdCromossomos; j++) {
-            intermediaryListaLista.get(intermediaryListaLista.size() - choose - 1).set(random.nextInt(qtdCromossomos), random.nextInt(8));
+        for (int j = 0; j < mutationRate * tamanhoCromossomos; j++) {
+            populacaoIntermediaria.get(populacaoIntermediaria.size() - choose - 1).set(random.nextInt(tamanhoCromossomos), random.nextInt(8));
         }
     }
 
     private int[] escolheElitismo() {
         int posPai = 0;
         int posMae = 0;
-        int valPai = ListaLista.get(0).get(ListaLista.get(0).size() - 1);
+        int valPai = populacao.get(0).get(populacao.get(0).size() - 1);
         int valMae = valPai;
 
         int atual = 0;
 
-        for (int i = 0; i < ListaLista.size(); i++) {
-            atual = ListaLista.get(i).get(ListaLista.get(i).size() - 1);
+        for (int i = 0; i < populacao.size(); i++) {
+            atual = populacao.get(i).get(populacao.get(i).size() - 1);
             if (atual > valPai) {
                 valPai = atual;
                 posPai = i;
@@ -170,7 +175,7 @@ public class Genetico {
                     break;
                 case "S":
                     pts += saida;
-                    log += path(array, true);
+                    log += "\n" + path(array, true);
                     foundIt = true;
                     end[0] = Integer.parseInt(str[1]);
                     end[1] = Integer.parseInt(str[2]);
