@@ -28,17 +28,25 @@ public class Genetico {
         for (int i = 0; i < qtdadeDeGeracoes; i++) {
             if (foundIt) {
                 log += "Saida encontrada na geracao " + (i - 1) + "\n";
+                log += "Tamanho agente: " + this.qtdCromossomos;
                 return;
             }
-            //System.out.println(i);
             int[] aux = escolheElitismo();
-            System.out.println(ListaLista.get(aux[0]).get(ListaLista.get(aux[0]).size() - 1));
-            System.out.println(ListaLista.get(aux[1]).get(ListaLista.get(aux[1]).size() - 1));
+            if (i % 1 == 0 && i > 0) {
+                log += "\nGeracao " + i + ":\n";
+                log += path(ListaLista.get(aux[0]), false) + "\n";
+                log += ("Pontuacao: " + ListaLista.get(aux[0]).get(ListaLista.get(aux[0]).size() - 1)) + "\n";
+                this.qtdCromossomos += 3;
+            }
+
             intermediaryListaLista = new ArrayList<>();
             removeAll();
 
-            intermediaryListaLista.add(new ArrayList<Integer>(ListaLista.get(aux[0])));
-            intermediaryListaLista.add(new ArrayList<Integer>(ListaLista.get(aux[1])));
+            ArrayList<Integer> lis1 = add(new ArrayList<Integer>(ListaLista.get(aux[0])));
+            ArrayList<Integer> lis2 = add(new ArrayList<Integer>(ListaLista.get(aux[1])));
+
+            intermediaryListaLista.add(lis1);
+            intermediaryListaLista.add(lis2);
             crossoverTwo(aux);
 
             for (int j = 0; j < (ListaLista.size() / 2) - 1; j++) {
@@ -58,6 +66,13 @@ public class Genetico {
         for (int i = 0; i < ListaLista.size(); i++) {
             ListaLista.get(i).remove(ListaLista.get(i).size() - 1);
         }
+    }
+
+    private ArrayList<Integer> add(ArrayList<Integer> array) {
+        for (int i = array.size(); i < qtdCromossomos; i++) {
+            array.add(random.nextInt(8));
+        }
+        return array;
     }
 
     private void startPopulation(int vetLen, int vetQt) {
@@ -95,8 +110,8 @@ public class Genetico {
             filho1.set(i, mae.get(i));
             filho2.set(i, pai.get(i));
         }
-        intermediaryListaLista.add(filho1);
-        intermediaryListaLista.add(filho2);
+        intermediaryListaLista.add(add(filho1));
+        intermediaryListaLista.add(add(filho2));
         mutagenico();
     }
 
@@ -131,7 +146,6 @@ public class Genetico {
         }
 
         int[] family = {posPai, posMae};
-
         return family;
     }
 
@@ -156,7 +170,8 @@ public class Genetico {
                     break;
                 case "S":
                     pts += saida;
-                    path(array);
+                    log += path(array, true);
+                    foundIt = true;
                     end[0] = Integer.parseInt(str[1]);
                     end[1] = Integer.parseInt(str[2]);
                     return pts;
@@ -214,11 +229,11 @@ public class Genetico {
         return new String[]{lab[var[0]][var[1]] + "", var[0] + "", var[1] + ""};
     }
 
-    private void path(ArrayList<Integer> array) {
-        if (foundIt) {
-            return;
+    private String path(ArrayList<Integer> array, boolean b) {
+        if (foundIt && b) {
+            return "";
         }
-        foundIt = true;
+        String l = "";
 
         String[][] print = new String[lab.length][lab.length];
         for (int i = 0; i < lab.length; i++) {
@@ -228,30 +243,33 @@ public class Genetico {
         }
 
         int[] pos = {0, 0};
-        log += "Caminho percorrido:\n(0, 0) ";
+        l += "Caminho percorrido:\n(0, 0) ";
         loop:
         for (int i = 0; i < array.size(); i++) {
             int aux = array.get(i);
             String[] str = anda(pos, aux);
             switch (str[0]) {
                 case "S":
-                    log += "(" + str[1] + ", " + str[2] + ")\n";
+                    l += "(" + str[1] + ", " + str[2] + ")\n\n";
                     break loop;
                 case "E":
                 case "0":
                     pos[0] = Integer.parseInt(str[1]);
                     pos[1] = Integer.parseInt(str[2]);
-                    log += "(" + str[1] + ", " + str[2] + ") ";
+                    l += "(" + str[1] + ", " + str[2] + ") ";
                     print[Integer.parseInt(str[1])][Integer.parseInt(str[2])] = "X";
                     break;
             }
         }
-        for (int i = 0; i < lab.length; i++) {
-            for (int j = 0; j < lab.length; j++) {
-                log += print[i][j] + " ";
+        if (b) {
+            for (int i = 0; i < lab.length; i++) {
+                for (int j = 0; j < lab.length; j++) {
+                    l += print[i][j] + " ";
+                }
+                l += "\n";
             }
-            log += "\n";
         }
+        return l;
     }
 
     public int[] getEnd() {
