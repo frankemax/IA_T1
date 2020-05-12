@@ -7,15 +7,13 @@ import java.util.ArrayList;
 public class Genetico {
 
     private String[][] lab = new Labirinto().getLabirinto();
-    private ArrayList<ArrayList<Integer>> ListaLista;
-    private ArrayList<ArrayList<Integer>> intermediaryListaLista;
+    private ArrayList<ArrayList<Integer>> ListaLista, intermediaryListaLista;
     private double mutationRate;
-    private int qtdadeDeGeracoes;
-    private int qtdCromossomos;
-    private int qtdadeDeFilhos;
+    private int qtdadeDeGeracoes, qtdCromossomos, qtdadeDeFilhos;
     private boolean foundIt;
-    public int[] end = new int[2];
-    public String log = "\n";
+    private int[] end = new int[2];
+    private String log = "\n";
+    private Random random = new Random();
 
     public Genetico(double mutationRate, int qtdadeDeGeracoes, int qtdCromossomos, int qtdadeDeFilhos) throws FileNotFoundException {
 
@@ -24,8 +22,6 @@ public class Genetico {
         this.qtdCromossomos = qtdCromossomos;
         this.qtdadeDeFilhos = qtdadeDeFilhos;
         this.foundIt = false;
-
-        Random r = new Random();
 
         startPopulation(qtdCromossomos, qtdadeDeFilhos);
 
@@ -45,8 +41,8 @@ public class Genetico {
             crossoverTwo(aux);
 
             for (int j = 0; j < (ListaLista.size() / 2) - 1; j++) {
-                aux[0] = r.nextInt(ListaLista.size());
-                aux[1] = r.nextInt(ListaLista.size());
+                aux[0] = random.nextInt(ListaLista.size());
+                aux[1] = random.nextInt(ListaLista.size());
                 crossoverTwo(aux);
             }
             ListaLista = intermediaryListaLista;
@@ -73,15 +69,13 @@ public class Genetico {
         //6-> ←
         //7-> ↖
 
-        Random r = new Random();
-
         this.ListaLista = new ArrayList<ArrayList<Integer>>(vetQt);
 
         for (int i = 0; i < vetQt; i++) {
             ArrayList<Integer> list = new ArrayList<Integer>();
 
             for (int j = 0; j < vetLen; j++) {
-                list.add(r.nextInt(8));
+                list.add(random.nextInt(8));
             }
             list.add(aptidaoCalc(list));
             ListaLista.add(list);
@@ -89,12 +83,10 @@ public class Genetico {
     }
 
     private void crossoverTwo(int[] family) {
-        Random r = new Random();
-
         ArrayList<Integer> pai = ListaLista.get(family[0]);
         ArrayList<Integer> mae = ListaLista.get(family[1]);
 
-        int ponto = r.nextInt(pai.size() / 2);
+        int ponto = random.nextInt(pai.size() / 2);
 
         ArrayList<Integer> filho1 = new ArrayList<Integer>(pai);
         ArrayList<Integer> filho2 = new ArrayList<Integer>(mae);
@@ -108,15 +100,11 @@ public class Genetico {
     }
 
     private void mutagenico() {
-
-        Random r = new Random();
-
-        int choose = r.nextInt(2);
+        int choose = random.nextInt(2);
 
         for (int j = 0; j < mutationRate * qtdCromossomos; j++) {
-            intermediaryListaLista.get(intermediaryListaLista.size() - choose - 1).set(r.nextInt(qtdCromossomos), r.nextInt(8));
+            intermediaryListaLista.get(intermediaryListaLista.size() - choose - 1).set(random.nextInt(qtdCromossomos), random.nextInt(8));
         }
-
     }
 
     private int[] escolheElitismo() {
@@ -147,8 +135,8 @@ public class Genetico {
     }
 
     private int aptidaoCalc(ArrayList<Integer> array) {
-        int buraco = -10000;
-        int parede = -100;
+        int buraco = -100;
+        int parede = -10;
         int anda = -1;
         int saida = 1000000000;
 
@@ -266,5 +254,12 @@ public class Genetico {
             log += "\n";
         }
     }
+    
+    public int[] getEnd(){
+        return end;
+    }
 
+    public String toString() {
+        return log;
+    }
 }
