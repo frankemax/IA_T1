@@ -29,14 +29,17 @@ public class AStar {
     private int[] saida;
     private ArrayList<Node> open;
     private ArrayList<Node> closed;
-    public String str = "";
+    private String log = "";
 
     public AStar(int[] entrada, int[] saida) throws FileNotFoundException {
         this.entrada = entrada;
         this.saida = saida;
         open = new ArrayList<>();
         closed = new ArrayList<>();
-        solve();
+        Node n = solve();
+        if(n == null){
+            log = "O caminho entre a entrada e a saida nao foi encontrado";
+        }
     }
 
     private Node solve() {
@@ -53,8 +56,7 @@ public class AStar {
             if (current.coord[0] == saida[0] && current.coord[1] == saida[1]) {
                 return current;
             }
-            int[] a = {current.coord[0], current.coord[1]};
-            vizinhos(a, current);
+            vizinhos(new int[] {current.coord[0], current.coord[1]}, current);
         }
         return null;
     }
@@ -105,7 +107,7 @@ public class AStar {
     }
 
     private void path(Node n) {
-        str += "\n\nMelhor saida encontrada pelo A*\n";
+        log += "\n\nMelhor saida encontrada pelo A*\n";
         String[][] print = new String[lab.length][lab.length];
         for (int i = 0; i < lab.length; i++) {
             for (int j = 0; j < lab.length; j++) {
@@ -121,12 +123,12 @@ public class AStar {
         }
         path = "(0, 0) " + path;
         print[saida[0]][saida[1]] = "S";
-        str += path + "\n\n";
+        log += path + "\n\n";
         for (int i = 0; i < lab.length; i++) {
             for (int j = 0; j < lab.length; j++) {
-                str += print[i][j] + " ";
+                log += print[i][j] + " ";
             }
-            str += "\n";
+            log += "\n";
         }
     }
 
@@ -161,5 +163,9 @@ public class AStar {
         } else {
             return e;
         }
+    }
+    
+    public String toString(){
+        return log;
     }
 }
