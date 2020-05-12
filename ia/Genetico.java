@@ -32,7 +32,8 @@ public class Genetico {
             }
             //System.out.println(i);
             int[] aux = escolheElitismo();
-
+            System.out.println(ListaLista.get(aux[0]).get(ListaLista.get(aux[0]).size() - 1));
+            System.out.println(ListaLista.get(aux[1]).get(ListaLista.get(aux[1]).size() - 1));
             intermediaryListaLista = new ArrayList<>();
             removeAll();
 
@@ -138,7 +139,7 @@ public class Genetico {
         int buraco = -100;
         int parede = -10;
         int anda = -1;
-        int saida = 1000000000;
+        int saida = 10000;
 
         int[] pos = {0, 0};
         int pts = 0;
@@ -210,9 +211,7 @@ public class Genetico {
             String[] s = {"1", pos[0] + "", pos[1] + ""};
             return s;
         }
-
-        String[] s = {lab[var[0]][var[1]] + "", var[0] + "", var[1] + ""};
-        return s;
+        return new String[]{lab[var[0]][var[1]] + "", var[0] + "", var[1] + ""};
     }
 
     private void path(ArrayList<Integer> array) {
@@ -254,8 +253,8 @@ public class Genetico {
             log += "\n";
         }
     }
-    
-    public int[] getEnd(){
+
+    public int[] getEnd() {
         return end;
     }
 
