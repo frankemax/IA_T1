@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 public class AStar {
 
-    private class Node {
+    private static class Node {
 
         int g;
         int h;
@@ -24,11 +24,10 @@ public class AStar {
         }
     }
 
-    private String[][] lab = new Labirinto().getLabirinto();
-    private int[] entrada;
-    private int[] saida;
-    private ArrayList<Node> open;
-    private ArrayList<Node> closed;
+    private final String[][] lab = new Labirinto().getLabirinto();
+    private final int[] entrada, saida;
+    private final ArrayList<Node> open;
+    private final ArrayList<Node> closed;
     private String log = "";
 
     public AStar(int[] entrada, int[] saida) throws FileNotFoundException {
@@ -37,7 +36,7 @@ public class AStar {
         open = new ArrayList<>();
         closed = new ArrayList<>();
         Node n = solve();
-        if(n == null){
+        if (n == null) {
             log = "O caminho entre a entrada e a saida nao foi encontrado";
         }
     }
@@ -56,7 +55,7 @@ public class AStar {
             if (current.coord[0] == saida[0] && current.coord[1] == saida[1]) {
                 return current;
             }
-            vizinhos(new int[] {current.coord[0], current.coord[1]}, current);
+            vizinhos(new int[]{current.coord[0], current.coord[1]}, current);
         }
         return null;
     }
@@ -107,12 +106,10 @@ public class AStar {
     }
 
     private void path(Node n) {
-        log += "\n\nMelhor saida encontrada pelo A*\n";
+        log += "\nMelhor saida encontrada pelo A*\n";
         String[][] print = new String[lab.length][lab.length];
         for (int i = 0; i < lab.length; i++) {
-            for (int j = 0; j < lab.length; j++) {
-                print[i][j] = lab[i][j];
-            }
+            System.arraycopy(lab[i], 0, print[i], 0, lab.length);
         }
 
         String path = "";
@@ -146,26 +143,10 @@ public class AStar {
     }
 
     private int heuristica(int atual1, int atual2, int entrada1, int entrada2) {
-        int a = 0;
-        int e = 0;
-        if (atual1 > entrada1) {
-            a = atual1 - entrada1;
-        } else {
-            a = entrada1 - atual1;
-        }
-        if (atual2 > entrada2) {
-            e = atual2 - entrada2;
-        } else {
-            e = entrada2 - atual2;
-        }
-        if (a > e) {
-            return a;
-        } else {
-            return e;
-        }
+        return Math.max(Math.abs(atual1 - entrada1), Math.abs(atual2 - entrada2));
     }
-    
-    public String toString(){
+
+    public String toString() {
         return log;
     }
 }

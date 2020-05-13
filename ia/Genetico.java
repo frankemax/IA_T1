@@ -6,30 +6,26 @@ import java.util.ArrayList;
 
 public class Genetico {
 
-    private String[][] lab = new Labirinto().getLabirinto();
+    private final String[][] lab = new Labirinto().getLabirinto();
     private ArrayList<ArrayList<Integer>> populacao, populacaoIntermediaria;
-    private double mutationRate;
-    private int qtdadeDeGeracoes, tamanhoCromossomos, tamanhoPopulacao;
+    private final double mutationRate;
+    private final int tamanhoCromossomos;
     private int count = 0;
-    private boolean foundIt, finaliza;
-    private int[] end = new int[2];
+    private boolean foundIt;
+    private final int[] end = new int[2];
     private String log = "\n";
     private String logFull = "\n";
     private String logLabirinto = "";
-    private boolean ver = false;
-    private Random random = new Random();
+    private final Random random = new Random();
 
     public Genetico(double mutationRate, int qtdadeDeGeracoes, int tamanhoCromossomos, int tamanhoPopulacao, boolean detalhado, boolean finaliza) throws FileNotFoundException {
 
         this.mutationRate = mutationRate;
-        this.qtdadeDeGeracoes = qtdadeDeGeracoes;
         this.tamanhoCromossomos = tamanhoCromossomos;
-        this.tamanhoPopulacao = tamanhoPopulacao;
         this.foundIt = false;
-        this.finaliza = finaliza;
 
         startPopulation(tamanhoCromossomos, tamanhoPopulacao);
-
+        boolean ver = false;
         for (int i = 0; i < qtdadeDeGeracoes; i++) {
             String str = "";
             if (foundIt) {
@@ -44,6 +40,7 @@ public class Genetico {
             }
             count = 0;
             int[] aux = escolheElitismo();
+
 
             if (i % 5 == 0 && i > 0) {
                 if (finaliza) {
@@ -96,21 +93,26 @@ public class Genetico {
                     }
                 }
             }
-            if (0 == populacao.get(aux[0]).get(populacao.get(aux[0]).size() - 1)) {
+            if (10 == populacao.get(aux[0]).get(populacao.get(aux[0]).size() - 1)) {
                 System.out.println(i);
 
-                logFull += path(populacao.get(aux[0]), true);
+                logFull += "\nGeracao " + i + ":\nMelhor agente:\n";
+                logFull += populacao.get(aux[0]);
+                logFull += str;
+                this.foundIt = false;
+                path(populacao.get(aux[0]), true);
+                this.foundIt = true;
                 logFull += logLabirinto;
-                break;
+                logFull += ("Pontuacao: " + populacao.get(aux[0]).get(populacao.get(aux[0]).size() - 1)) + "\nTamanho do agente: " + this.tamanhoCromossomos + "\n";
+                return;
             }
             populacaoIntermediaria = new ArrayList<>();
             removeAll();
 
-            populacaoIntermediaria.add(add(new ArrayList<Integer>(populacao.get(aux[0]))));
-            populacaoIntermediaria.add(add(new ArrayList<Integer>(populacao.get(aux[1]))));
+            populacaoIntermediaria.add(add(new ArrayList<>(populacao.get(aux[0]))));
+            populacaoIntermediaria.add(add(new ArrayList<>(populacao.get(aux[1]))));
             crossoverTwo(aux);
-
-            for (int j = 0; j < (tamanhoPopulacao / 2) - 2; j++) {
+            for (int j = 0; j < (tamanhoCromossomos / 2) + 3; j++) {
                 aux[0] = random.nextInt(populacao.size());
                 aux[1] = random.nextInt(populacao.size());
                 int[] var = new int[2];
@@ -121,6 +123,7 @@ public class Genetico {
                 }
                 aux[0] = random.nextInt(populacao.size());
                 aux[1] = random.nextInt(populacao.size());
+
                 if (populacao.get(aux[0]).get(populacao.get(aux[0]).size() - 1) > populacao.get(aux[1]).get(populacao.get(aux[1]).size() - 1)) {
                     var[1] = aux[0];
                 } else {
@@ -129,16 +132,15 @@ public class Genetico {
                 crossoverTwo(var);
             }
             populacao = populacaoIntermediaria;
-
-            for (int j = 0; j < populacao.size(); j++) {
-                populacao.get(j).add(aptidaoCalc(populacao.get(j)));
+            for (ArrayList<Integer> integers : populacao) {
+                integers.add(aptidaoCalc(integers));
             }
         }
     }
 
     private void removeAll() {
-        for (int i = 0; i < populacao.size(); i++) {
-            populacao.get(i).remove(populacao.get(i).size() - 1);
+        for (ArrayList<Integer> integers : populacao) {
+            integers.remove(integers.size() - 1);
         }
     }
 
@@ -159,10 +161,11 @@ public class Genetico {
         //6-> ←
         //7-> ↖
 
-        this.populacao = new ArrayList<ArrayList<Integer>>(vetQt);
+        this.populacao = new ArrayList<>(vetQt);
+
 
         for (int i = 0; i < vetQt; i++) {
-            ArrayList<Integer> list = new ArrayList<Integer>();
+            ArrayList<Integer> list = new ArrayList<>();
 
             for (int j = 0; j < vetLen; j++) {
                 list.add(random.nextInt(8));
@@ -178,8 +181,8 @@ public class Genetico {
 
         int ponto = random.nextInt(pai.size() / 2);
 
-        ArrayList<Integer> filho1 = new ArrayList<Integer>(pai);
-        ArrayList<Integer> filho2 = new ArrayList<Integer>(mae);
+        ArrayList<Integer> filho1 = new ArrayList<>(pai);
+        ArrayList<Integer> filho2 = new ArrayList<>(mae);
         for (int i = ponto; i < pai.size() - ponto; i++) {
             filho1.set(i, mae.get(i));
             filho2.set(i, pai.get(i));
@@ -203,7 +206,7 @@ public class Genetico {
         int valPai = populacao.get(0).get(populacao.get(0).size() - 1);
         int valMae = valPai;
 
-        int atual = 0;
+        int atual;
 
         for (int i = 0; i < populacao.size(); i++) {
             atual = populacao.get(i).get(populacao.get(i).size() - 1);
@@ -219,15 +222,14 @@ public class Genetico {
             }
         }
 
-        int[] family = {posPai, posMae};
-        return family;
+        return new int[]{posPai, posMae};
     }
 
     private int aptidaoCalc(ArrayList<Integer> array) {
         int buraco = -10;
         int parede = -1;
         int anda = 0;
-        int saida = 0;
+        int saida = 10;
 
         int[] pos = {0, 0};
         int pts = 0;
@@ -298,8 +300,7 @@ public class Genetico {
                 break;
         }
         if (var[0] < 0 || var[0] >= lab.length || var[1] < 0 || var[1] >= lab.length) {
-            String[] s = {"1", pos[0] + "", pos[1] + ""};
-            return s;
+            return new String[]{"1", pos[0] + "", pos[1] + ""};
         }
         return new String[]{lab[var[0]][var[1]] + "", var[0] + "", var[1] + ""};
     }
@@ -308,33 +309,30 @@ public class Genetico {
         if (foundIt && b) {
             return "";
         }
-        String l = "\n";
+        StringBuilder l = new StringBuilder("\n");
 
         String[][] print = new String[lab.length][lab.length];
         for (int i = 0; i < lab.length; i++) {
-            for (int j = 0; j < lab.length; j++) {
-                print[i][j] = lab[i][j];
-            }
+            System.arraycopy(lab[i], 0, print[i], 0, lab.length);
         }
 
         int[] pos = {0, 0};
-        l += "Caminho percorrido:\n(0, 0) ";
+        l.append("Caminho percorrido:\n(0, 0) ");
         loop:
-        for (int i = 0; i < array.size(); i++) {
-            int aux = array.get(i);
+        for (int aux : array) {
             String[] str = anda(pos, aux);
             if (aux < 0 || aux > 7) {
                 break;
             }
             switch (str[0]) {
                 case "S":
-                    l += "(" + str[1] + ", " + str[2] + ")";
+                    l.append("(").append(str[1]).append(", ").append(str[2]).append(")");
                     break loop;
                 case "E":
                 case "0":
                     pos[0] = Integer.parseInt(str[1]);
                     pos[1] = Integer.parseInt(str[2]);
-                    l += "(" + str[1] + ", " + str[2] + ") ";
+                    l.append("(").append(str[1]).append(", ").append(str[2]).append(") ");
                     print[Integer.parseInt(str[1])][Integer.parseInt(str[2])] = "X";
                     break;
             }
@@ -349,7 +347,7 @@ public class Genetico {
             }
             logLabirinto += "\n";
         }
-        return l;
+        return l.toString();
     }
 
     public int[] getEnd() {

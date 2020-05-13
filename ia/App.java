@@ -24,7 +24,7 @@ public class App {
         System.out.println("Parar de rodar o generico apos achar a saida? ('false' = nao ou 'true' = sim)");*/
         boolean finaliza = true;
         
-        Genetico gen = new Genetico(0.1, 50000, 41, 50, false, finaliza);
+        Genetico gen = new Genetico(0.1, 5000, 41, 50, false, finaliza);
         int[] in = {0, 0};
         AStar a = new AStar(in, gen.getEnd());
         System.out.print("Resultado:");
@@ -32,7 +32,7 @@ public class App {
         pw.print(gen.toString(finaliza));
         pw.print(a.toString());
         System.out.println(gen.toString(finaliza));
-        //System.out.println(a.toString());
+        System.out.println(a.toString());
         pw.close();
     }
 }

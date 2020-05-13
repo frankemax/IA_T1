@@ -6,7 +6,7 @@ import java.util.Scanner;
 
 public class Labirinto {
 
-    private String[][] lab;
+    private final String[][] lab;
 
     public Labirinto() throws FileNotFoundException {
         File f = new File("lab10.txt");
