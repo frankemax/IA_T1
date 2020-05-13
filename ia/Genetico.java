@@ -44,6 +44,7 @@ public class Genetico {
             }
             count = 0;
             int[] aux = escolheElitismo();
+
             if (i % 5 == 0 && i > 0) {
                 if (finaliza) {
                     logFull += "\nGeracao " + i + ":\nMelhor agente:\n";
@@ -68,7 +69,7 @@ public class Genetico {
                     log += ("Pontuacao: " + populacao.get(aux[0]).get(populacao.get(aux[0]).size() - 1)) + "\nTamanho do agente: " + this.tamanhoCromossomos + "\n";
 
                 }
-                this.tamanhoCromossomos += 4;
+                //this.tamanhoCromossomos += 4;
             } else {
                 if (detalhado) {
                     if (finaliza) {
@@ -95,7 +96,13 @@ public class Genetico {
                     }
                 }
             }
+            if (0 == populacao.get(aux[0]).get(populacao.get(aux[0]).size() - 1)) {
+                System.out.println(i);
 
+                logFull += path(populacao.get(aux[0]), true);
+                logFull += logLabirinto;
+                break;
+            }
             populacaoIntermediaria = new ArrayList<>();
             removeAll();
 
@@ -103,10 +110,23 @@ public class Genetico {
             populacaoIntermediaria.add(add(new ArrayList<Integer>(populacao.get(aux[1]))));
             crossoverTwo(aux);
 
-            for (int j = 0; j < (populacao.size() / 2) - 1; j++) {
+            for (int j = 0; j < (tamanhoPopulacao / 2) - 2; j++) {
                 aux[0] = random.nextInt(populacao.size());
                 aux[1] = random.nextInt(populacao.size());
-                crossoverTwo(aux);
+                int[] var = new int[2];
+                if (populacao.get(aux[0]).get(populacao.get(aux[0]).size() - 1) > populacao.get(aux[1]).get(populacao.get(aux[1]).size() - 1)) {
+                    var[0] = aux[0];
+                } else {
+                    var[0] = aux[1];
+                }
+                aux[0] = random.nextInt(populacao.size());
+                aux[1] = random.nextInt(populacao.size());
+                if (populacao.get(aux[0]).get(populacao.get(aux[0]).size() - 1) > populacao.get(aux[1]).get(populacao.get(aux[1]).size() - 1)) {
+                    var[1] = aux[0];
+                } else {
+                    var[1] = aux[1];
+                }
+                crossoverTwo(var);
             }
             populacao = populacaoIntermediaria;
 
@@ -114,9 +134,6 @@ public class Genetico {
                 populacao.get(j).add(aptidaoCalc(populacao.get(j)));
             }
         }
-        int[] aux = escolheElitismo();
-        logFull += path(populacao.get(aux[0]), true);
-        logFull += logLabirinto;
     }
 
     private void removeAll() {
@@ -207,10 +224,10 @@ public class Genetico {
     }
 
     private int aptidaoCalc(ArrayList<Integer> array) {
-        int buraco = -100;
-        int parede = -10;
-        int anda = -1;
-        int saida = 10000;
+        int buraco = -10;
+        int parede = -1;
+        int anda = 0;
+        int saida = 0;
 
         int[] pos = {0, 0};
         int pts = 0;
