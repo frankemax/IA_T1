@@ -25,7 +25,7 @@ public class Labirinto {
     }
 
     public static Labirinto labirintoInstance(String filepath) throws FileNotFoundException {
-        if( instance == null ){
+        if (instance == null) {
             instance = new Labirinto(filepath);
         }
         return instance;
