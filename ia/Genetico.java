@@ -141,7 +141,7 @@ public class Genetico {
 
     private void mutagenico() { //muta um dos dois ultimos cromossomos
 
-        if(random.nextInt(100) > 20)return; //PODE SER ALTERADA
+        //if(random.nextInt(100) > 20)return; //PODE SER ALTERADA PARA SO MUTAR 10%
 
         for (int i = 0; i < mutationRate * tamanhoCromossomos; i++) {
             populacaoIntermediaria.get(populacaoIntermediaria.size() - random.nextInt(2) - 1).set(random.nextInt(tamanhoCromossomos), random.nextInt(8));
@@ -231,15 +231,17 @@ public class Genetico {
 
         int count = 0;
         for (int i = 0; i < moves.size(); i++) { //PODE SER ALTERADA
-            for (int j = i+1; j < moves.size(); j++) {
+            for (int j = i + 1; j < moves.size(); j++) {
                 if (moves.get(i)[0] == moves.get(j)[0] && moves.get(i)[1] == moves.get(j)[1]) {
-                    count -= 1;
+                    //count -= 1; //REMOVER ESSE COMENTARIO PARA DETECTAR CICLOS
                     moves.remove(j);
                     j--;
                 }
             }
         }
-        if(count>1)count = count / 3;
+        if (count > 1) {
+            count = count / 3;
+        }
 
         return pts + count;
     }
