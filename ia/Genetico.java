@@ -6,121 +6,74 @@ import java.util.ArrayList;
 
 public class Genetico {
 
-    private final String[][] lab = new Labirinto().getLabirinto();
+    private final String[][] labirinto = new Labirinto().getLabirinto();
     private ArrayList<ArrayList<Integer>> populacao, populacaoIntermediaria;
     private final double mutationRate;
     private final int tamanhoCromossomos;
-    private int count = 0;
-    private boolean foundIt;
-    private final int[] end = new int[2];
-    private String log = "\n";
-    private String logFull = "\n";
+    private int timesFound = 0;
+    private boolean foundIt = false;
+    private final int[] exit = new int[2];
+    private final StringBuilder log = new StringBuilder("\n");
     private String logLabirinto = "";
     private final Random random = new Random();
 
-    public Genetico(double mutationRate, int qtdadeDeGeracoes, int tamanhoCromossomos, int tamanhoPopulacao, boolean detalhado, boolean finaliza) throws FileNotFoundException {
+    public Genetico(double mutationRate, int qtdadeDeGeracoes, int tamanhoCromossomos, int tamanhoPopulacao, boolean detalhado) throws FileNotFoundException {
 
         this.mutationRate = mutationRate;
         this.tamanhoCromossomos = tamanhoCromossomos;
-        this.foundIt = false;
 
-        startPopulation(tamanhoCromossomos, tamanhoPopulacao);
-        boolean ver = false;
+        startPopulation(tamanhoPopulacao + 1);
+
+        boolean firstTime = false;
         for (int i = 0; i < qtdadeDeGeracoes; i++) {
-            String str = "";
-            if (foundIt) {
-                if (finaliza) {
-                    str += "\n" + count + " saidas encontrada na geracao " + (i);
-                } else {
-                    log += logLabirinto;
-                    log += "Saida encontrada na geracao " + (i) + "\n";
-                    log += "Tamanho agente: " + this.tamanhoCromossomos;
-                    return;
-                }
-            }
-            count = 0;
+
             int[] aux = escolheElitismo();
 
-
-            if (i % 5 == 0 && i > 0) {
-                if (finaliza) {
-                    logFull += "\nGeracao " + i + ":\nMelhor agente:\n";
-                    logFull += populacao.get(aux[0]);
-                    logFull += str;
-                    if (foundIt && !ver) {
-                        logFull += logLabirinto;
-                        ver = true;
-                    } else {
-                        logFull += path(populacao.get(aux[0]), false);
-                    }
-                    logFull += ("\nPontuacao: " + populacao.get(aux[0]).get(populacao.get(aux[0]).size() - 1)) + "\nTamanho do agente: " + this.tamanhoCromossomos + "\n";
+            if ((i % 5 == 0 && i > 0) || detalhado) { //guarda os logs
+                log.append("\nGeracao ").append(i).append(":\nMelhor agente:\n");
+                log.append(populacao.get(aux[0]));
+                log.append("\n").append(timesFound).append(" saidas encontrada na geracao ").append(i);
+                if (foundIt && !firstTime) {
+                    log.append(logLabirinto);
+                    firstTime = true;
                 } else {
-                    log += "\nGeracao " + i + ":\nMelhor agente:\n";
-                    log += populacao.get(aux[0]);
-                    if (foundIt && !ver) {
-                        log += logLabirinto;
-                        ver = true;
-                    } else {
-                        log += path(populacao.get(aux[0]), false) + "\n";
-                    }
-                    log += ("Pontuacao: " + populacao.get(aux[0]).get(populacao.get(aux[0]).size() - 1)) + "\nTamanho do agente: " + this.tamanhoCromossomos + "\n";
-
+                    log.append(path(populacao.get(aux[0]), false));
                 }
-                //this.tamanhoCromossomos += 4;
-            } else {
-                if (detalhado) {
-                    if (finaliza) {
-                        logFull += "\nGeracao " + i + ":\nMelhor agente:\n";
-                        logFull += populacao.get(aux[0]);
-                        logFull += str;
-                        if (foundIt && !ver) {
-                            logFull += logLabirinto;
-                            ver = true;
-                        } else {
-                            logFull += path(populacao.get(aux[0]), false) + "\n";
-                        }
-                        logFull += ("Pontuacao: " + populacao.get(aux[0]).get(populacao.get(aux[0]).size() - 1)) + "\nTamanho do agente: " + this.tamanhoCromossomos + "\n";
-                    } else {
-                        log += "\nGeracao " + i + ":\nMelhor agente:\n";
-                        log += populacao.get(aux[0]);
-                        if (foundIt && !ver) {
-                            log += logLabirinto;
-                            ver = true;
-                        } else {
-                            log += path(populacao.get(aux[0]), false) + "\n";
-                        }
-                        log += ("Pontuacao: " + populacao.get(aux[0]).get(populacao.get(aux[0]).size() - 1)) + "\nTamanho do agente: " + this.tamanhoCromossomos + "\n";
-                    }
-                }
+                log.append("\nPontuacao: ").append(populacao.get(aux[0]).get(populacao.get(aux[0]).size() - 1)).append("\nTamanho do agente: ").append(this.tamanhoCromossomos).append("\n");
             }
-            if (100 == populacao.get(aux[0]).get(populacao.get(aux[0]).size() - 1)) {
-                System.out.println(i);
 
-                logFull += "\nGeracao " + i + ":\nMelhor agente:\n";
-                logFull += populacao.get(aux[0]);
-                logFull += str;
+            if (100 == populacao.get(aux[0]).get(populacao.get(aux[0]).size() - 1)) { //quando encontra um caminho sem perder pontos guarda os logs e encerra
+                log.append("\n\nCaminho encontrado pelo algoritmo genetico: ");
+                log.append("\nGeracao ").append(i).append(":\nAgente:\n");
+                log.append(populacao.get(aux[0]));
                 this.foundIt = false;
                 path(populacao.get(aux[0]), true);
                 this.foundIt = true;
-                logFull += logLabirinto;
-                logFull += ("Pontuacao: " + populacao.get(aux[0]).get(populacao.get(aux[0]).size() - 1)) + "\nTamanho do agente: " + this.tamanhoCromossomos + "\n";
+                log.append(logLabirinto);
+                log.append("Pontuacao: ").append(populacao.get(aux[0]).get(populacao.get(aux[0]).size() - 1)).append("\nTamanho do agente: ").append(this.tamanhoCromossomos).append("\n");
                 return;
             }
+
             populacaoIntermediaria = new ArrayList<>();
             removeAll();
 
-            populacaoIntermediaria.add(add(new ArrayList<>(populacao.get(aux[0]))));
-            populacaoIntermediaria.add(add(new ArrayList<>(populacao.get(aux[1]))));
+            populacaoIntermediaria.add(new ArrayList<>(populacao.get(aux[0])));
+            populacaoIntermediaria.add(new ArrayList<>(populacao.get(aux[1])));
+
             crossoverTwo(aux);
+
             for (int j = 0; j < (tamanhoCromossomos / 2) + 3; j++) {
+
                 aux[0] = random.nextInt(populacao.size());
                 aux[1] = random.nextInt(populacao.size());
                 int[] var = new int[2];
+
                 if (populacao.get(aux[0]).get(populacao.get(aux[0]).size() - 1) > populacao.get(aux[1]).get(populacao.get(aux[1]).size() - 1)) {
                     var[0] = aux[0];
                 } else {
                     var[0] = aux[1];
                 }
+
                 aux[0] = random.nextInt(populacao.size());
                 aux[1] = random.nextInt(populacao.size());
 
@@ -129,29 +82,26 @@ public class Genetico {
                 } else {
                     var[1] = aux[1];
                 }
+
                 crossoverTwo(var);
             }
+
             populacao = populacaoIntermediaria;
+            timesFound = 0;
+
             for (ArrayList<Integer> integers : populacao) {
                 integers.add(aptidaoCalc(integers));
             }
         }
     }
 
-    private void removeAll() {
+    private void removeAll() { // retira o resultado do calculo dos agentes
         for (ArrayList<Integer> integers : populacao) {
             integers.remove(integers.size() - 1);
         }
     }
 
-    private ArrayList<Integer> add(ArrayList<Integer> array) {
-        for (int i = array.size(); i < tamanhoCromossomos; i++) {
-            array.add(random.nextInt(8));
-        }
-        return array;
-    }
-
-    private void startPopulation(int vetLen, int vetQt) {
+    private void startPopulation(int tamanhoPopulacao) { //gera os agentes e seus movimentos
         //0-> ↑
         //1-> ↗
         //2-> →
@@ -161,21 +111,21 @@ public class Genetico {
         //6-> ←
         //7-> ↖
 
-        this.populacao = new ArrayList<>(vetQt);
+        this.populacao = new ArrayList<>(tamanhoPopulacao);
 
-
-        for (int i = 0; i < vetQt; i++) {
+        for (int i = 0; i < tamanhoPopulacao; i++) {
             ArrayList<Integer> list = new ArrayList<>();
 
-            for (int j = 0; j < vetLen; j++) {
+            for (int j = 0; j < tamanhoCromossomos; j++) {
                 list.add(random.nextInt(8));
             }
+
             list.add(aptidaoCalc(list));
             populacao.add(list);
         }
     }
 
-    private void crossoverTwo(int[] family) {
+    private void crossoverTwo(int[] family) { //faz o crossover com os elementos do vetor
         ArrayList<Integer> pai = populacao.get(family[0]);
         ArrayList<Integer> mae = populacao.get(family[1]);
 
@@ -183,41 +133,49 @@ public class Genetico {
 
         ArrayList<Integer> filho1 = new ArrayList<>(pai);
         ArrayList<Integer> filho2 = new ArrayList<>(mae);
+
         for (int i = ponto; i < pai.size() - ponto; i++) {
             filho1.set(i, mae.get(i));
             filho2.set(i, pai.get(i));
         }
-        populacaoIntermediaria.add(add(filho1));
-        populacaoIntermediaria.add(add(filho2));
+        populacaoIntermediaria.add(filho1);
+        populacaoIntermediaria.add(filho2);
+
         mutagenico();
     }
 
-    private void mutagenico() {
-        int choose = random.nextInt(2);
-
+    private void mutagenico() { //muta um dos dois ultimos cromossomos
         for (int j = 0; j < mutationRate * tamanhoCromossomos; j++) {
-            populacaoIntermediaria.get(populacaoIntermediaria.size() - choose - 1).set(random.nextInt(tamanhoCromossomos), random.nextInt(8));
+            populacaoIntermediaria.get(populacaoIntermediaria.size() - random.nextInt(2) - 1).set(random.nextInt(tamanhoCromossomos), random.nextInt(8));
         }
     }
 
-    private int[] escolheElitismo() {
+    private int[] escolheElitismo() { //retorna os dois melhores cromossomos
         int posPai = 0;
-        int posMae = 0;
+        int posMae = 1;
         int valPai = populacao.get(0).get(populacao.get(0).size() - 1);
-        int valMae = valPai;
-
+        int valMae = populacao.get(1).get(populacao.get(1).size() - 1);
         int atual;
 
         for (int i = 0; i < populacao.size(); i++) {
             atual = populacao.get(i).get(populacao.get(i).size() - 1);
-            if (atual > valPai) {
-                valPai = atual;
-                posPai = i;
 
-            } else {
-                if (atual > valMae && atual != valPai) {
+            if (atual > valMae) {
+                if (atual < valPai) {
                     valMae = atual;
                     posMae = i;
+                } else {
+                    if (atual > valPai) {
+                        valMae = valPai;
+                        posMae = posPai;
+                        valPai = atual;
+                        posPai = i;
+                    } else {
+                        if (i != posPai) {
+                            valMae = atual;
+                            posMae = i;
+                        }
+                    }
                 }
             }
         }
@@ -225,7 +183,7 @@ public class Genetico {
         return new int[]{posPai, posMae};
     }
 
-    private int aptidaoCalc(ArrayList<Integer> array) {
+    private int aptidaoCalc(ArrayList<Integer> array) { //calcula a aptidao do cromossomo
         int buraco = -5;
         int parede = -1;
         int anda = 0;
@@ -235,8 +193,10 @@ public class Genetico {
         int pts = 0;
 
         for (int i = 0; i < array.size(); i++) {
+
             int aux = array.get(i);
             String[] str = anda(pos, aux);
+
             switch (str[0]) {
                 case "1":
                     pts += parede;
@@ -247,10 +207,10 @@ public class Genetico {
                 case "S":
                     pts += saida;
                     path(array, true);
-                    count++;
+                    timesFound++;
                     foundIt = true;
-                    end[0] = Integer.parseInt(str[1]);
-                    end[1] = Integer.parseInt(str[2]);
+                    exit[0] = Integer.parseInt(str[1]);
+                    exit[1] = Integer.parseInt(str[2]);
                     return pts;
                 case "E":
                 case "0":
@@ -265,6 +225,7 @@ public class Genetico {
 
     private String[] anda(int[] pos, int dir) {
         int[] var = new int[2];
+
         switch (dir) {
             case 0:
                 var[0] = pos[0] - 1;
@@ -299,25 +260,29 @@ public class Genetico {
                 var[1] = pos[1] - 1;
                 break;
         }
-        if (var[0] < 0 || var[0] >= lab.length || var[1] < 0 || var[1] >= lab.length) {
+
+        if (var[0] < 0 || var[0] >= labirinto.length || var[1] < 0 || var[1] >= labirinto[0].length) {
             return new String[]{"1", pos[0] + "", pos[1] + ""};
         }
-        return new String[]{lab[var[0]][var[1]] + "", var[0] + "", var[1] + ""};
+
+        return new String[]{labirinto[var[0]][var[1]] + "", var[0] + "", var[1] + ""};
     }
 
-    private String path(ArrayList<Integer> array, boolean b) {
-        if (foundIt && b) {
+    private String path(ArrayList<Integer> array, boolean doMap) {
+        if (foundIt && doMap) {
             return "";
         }
-        StringBuilder l = new StringBuilder("\n");
 
-        String[][] print = new String[lab.length][lab.length];
-        for (int i = 0; i < lab.length; i++) {
-            System.arraycopy(lab[i], 0, print[i], 0, lab.length);
+        StringBuilder l = new StringBuilder("\n");
+        String[][] print = new String[labirinto.length][labirinto.length];
+
+        for (int i = 0; i < labirinto.length; i++) {
+            System.arraycopy(labirinto[i], 0, print[i], 0, labirinto.length);
         }
 
         int[] pos = {0, 0};
         l.append("Caminho percorrido:\n(0, 0) ");
+
         loop:
         for (int aux : array) {
             String[] str = anda(pos, aux);
@@ -337,27 +302,26 @@ public class Genetico {
                     break;
             }
         }
-        if (b) {
+
+        if (doMap) {
             logLabirinto = l + "\n\n";
-            for (int i = 0; i < lab.length; i++) {
-                for (int j = 0; j < lab.length; j++) {
+            for (int i = 0; i < labirinto.length; i++) {
+                for (int j = 0; j < labirinto.length; j++) {
                     logLabirinto += print[i][j] + " ";
                 }
                 logLabirinto += "\n";
             }
             logLabirinto += "\n";
         }
+
         return l.toString();
     }
 
-    public int[] getEnd() {
-        return end;
+    public int[] getExit() {
+        return exit;
     }
 
-    public String toString(boolean b) {
-        if (b) {
-            return logFull;
-        }
-        return log;
+    public String toString() {
+        return log.toString();
     }
 }
