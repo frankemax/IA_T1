@@ -24,7 +24,7 @@ public class App {
         System.out.println("Frequncia dos logs: (a cada x geracoes)");
         int freqLog = sc.nextInt();
 
-        Genetico genetico = new Genetico(taxa, geracoes, 41, tamanhoPop, freqLog);
+        Genetico genetico = new Genetico(taxa, geracoes, tamanhoPop, freqLog);
 
         AStar aStar = new AStar(new int[]{0, 0}, genetico.getExit());
 

@@ -6,7 +6,8 @@ import java.util.ArrayList;
 
 public class Genetico {
 
-    private final String[][] labirinto = new Labirinto().getLabirinto();
+    private final Labirinto lab = new Labirinto();
+    private final String[][] labirinto = lab.getLabirinto();
     private ArrayList<ArrayList<Integer>> populacao, populacaoIntermediaria;
     private final double mutationRate;
     private final int tamanhoCromossomos;
@@ -17,10 +18,10 @@ public class Genetico {
     private String logLabirinto = "";
     private final Random random = new Random();
 
-    public Genetico(double mutationRate, int qtdadeDeGeracoes, int tamanhoCromossomos, int tamanhoPopulacao, int freqLog) throws FileNotFoundException {
+    public Genetico(double mutationRate, int qtdadeDeGeracoes, int tamanhoPopulacao, int freqLog) throws FileNotFoundException {
 
         this.mutationRate = mutationRate;
-        this.tamanhoCromossomos = tamanhoCromossomos;
+        this.tamanhoCromossomos = lab.getEmpty();
 
         startPopulation(tamanhoPopulacao + 1);
 
@@ -42,7 +43,7 @@ public class Genetico {
                 log.append("\nPontuacao: ").append(populacao.get(aux[0]).get(populacao.get(aux[0]).size() - 1)).append("\nTamanho do agente: ").append(this.tamanhoCromossomos).append("\n");
             }
 
-            if (100 == populacao.get(aux[0]).get(populacao.get(aux[0]).size() - 1)) { //quando encontra um caminho sem perder pontos guarda os logs e encerra
+            if (10000 == populacao.get(aux[0]).get(populacao.get(aux[0]).size() - 1)) { //quando encontra um caminho sem perder pontos guarda os logs e encerra
                 log.append("\n\nCaminho encontrado pelo algoritmo genetico: ");
                 log.append("\nGeracao ").append(i).append(":\nAgente:\n");
                 log.append(populacao.get(aux[0]));
@@ -139,6 +140,9 @@ public class Genetico {
     }
 
     private void mutagenico() { //muta um dos dois ultimos cromossomos
+
+        if(random.nextInt(100) > 20)return; //PODE SER ALTERADA
+
         for (int i = 0; i < mutationRate * tamanhoCromossomos; i++) {
             populacaoIntermediaria.get(populacaoIntermediaria.size() - random.nextInt(2) - 1).set(random.nextInt(tamanhoCromossomos), random.nextInt(8));
         }
@@ -189,14 +193,17 @@ public class Genetico {
         int buraco = -5;
         int parede = -1;
         int anda = 0;
-        int saida = 100;
+        int saida = 10000;
 
         int[] pos = {0, 0};
         int pts = 0;
 
+        ArrayList<int[]> moves = new ArrayList<>();
+
         for (int aux : array) {
 
             String[] str = anda(pos, aux);
+            moves.add(new int[]{Integer.parseInt(str[1]), Integer.parseInt(str[2])});
 
             switch (str[0]) {
                 case "1":
@@ -221,7 +228,20 @@ public class Genetico {
                     break;
             }
         }
-        return pts;
+
+        int count = 0;
+        for (int i = 0; i < moves.size(); i++) { //PODE SER ALTERADA
+            for (int j = i+1; j < moves.size(); j++) {
+                if (moves.get(i)[0] == moves.get(j)[0] && moves.get(i)[1] == moves.get(j)[1]) {
+                    count -= 1;
+                    moves.remove(j);
+                    j--;
+                }
+            }
+        }
+        if(count>1)count = count / 3;
+
+        return pts + count;
     }
 
     private String[] anda(int[] pos, int dir) {

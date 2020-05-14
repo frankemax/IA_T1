@@ -26,4 +26,17 @@ public class Labirinto {
     public String[][] getLabirinto() {
         return labirinto;
     }
+
+    public int getEmpty() {
+
+        int count = 0;
+        for (int i = 0; i < labirinto.length; i++) {
+            for (int j = 0; j < labirinto[0].length; j++) {
+                if (labirinto[i][j].equals("0")) {
+                    count++;
+                }
+            }
+        }
+        return count + 1;
+    }
 }
