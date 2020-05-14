@@ -14,8 +14,6 @@ public class App {
         String path = sc.next();
         Labirinto lab = Labirinto.labirintoInstance(path);
 
-        System.out.println("Digite o path do labirinto:");
-        String saida = sc.next();
         File f = new File("saida.txt");
         PrintWriter pw = new PrintWriter(f);
 
