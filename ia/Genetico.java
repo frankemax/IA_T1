@@ -93,7 +93,7 @@ public class Genetico {
                     }
                 }
             }
-            if (10 == populacao.get(aux[0]).get(populacao.get(aux[0]).size() - 1)) {
+            if (100 == populacao.get(aux[0]).get(populacao.get(aux[0]).size() - 1)) {
                 System.out.println(i);
 
                 logFull += "\nGeracao " + i + ":\nMelhor agente:\n";
@@ -226,10 +226,10 @@ public class Genetico {
     }
 
     private int aptidaoCalc(ArrayList<Integer> array) {
-        int buraco = -10;
+        int buraco = -5;
         int parede = -1;
         int anda = 0;
-        int saida = 10;
+        int saida = 100;
 
         int[] pos = {0, 0};
         int pts = 0;
