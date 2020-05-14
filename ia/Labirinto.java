@@ -9,7 +9,7 @@ public class Labirinto {
     private final String[][] labirinto;
 
     public Labirinto() throws FileNotFoundException {
-        File f = new File("lab10.txt");
+        File f = new File("labirinto_teste4.txt");
         Scanner sc = new Scanner(f);
 
         int tam = sc.nextInt();
