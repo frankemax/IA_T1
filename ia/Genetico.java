@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 public class Genetico {
 
-    private final Labirinto lab = new Labirinto();
+    private final Labirinto lab = Labirinto.labirintoInstance("");
     private final String[][] labirinto = lab.getLabirinto();
     private ArrayList<ArrayList<Integer>> populacao, populacaoIntermediaria;
     private final double mutationRate;

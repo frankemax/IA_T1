@@ -24,7 +24,7 @@ public class AStar {
         }
     }
 
-    private final String[][] labirinto = new Labirinto().getLabirinto();
+    private final String[][] labirinto = Labirinto.labirintoInstance("").getLabirinto();
     private final int[] entrada, saida;
     private final ArrayList<Node> open;
     private final ArrayList<Node> closed;

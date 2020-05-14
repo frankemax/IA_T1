@@ -9,6 +9,11 @@ public class App {
 
     public static void main(String[] args) throws FileNotFoundException {
         Scanner sc = new Scanner(System.in);
+
+        System.out.println("Digite o path do labirinto:");
+        String path = sc.next();
+        Labirinto lab = Labirinto.labirintoInstance(path);
+
         File f = new File("saida.txt");
         PrintWriter pw = new PrintWriter(f);
 

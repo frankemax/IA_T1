@@ -7,9 +7,10 @@ import java.util.Scanner;
 public class Labirinto {
 
     private final String[][] labirinto;
+    private static Labirinto instance;
 
-    public Labirinto() throws FileNotFoundException {
-        File f = new File("labirinto_teste4.txt");
+    private Labirinto(String path) throws FileNotFoundException {
+        File f = new File(path);
         Scanner sc = new Scanner(f);
 
         int tam = sc.nextInt();
@@ -21,6 +22,13 @@ public class Labirinto {
                 labirinto[i][j] = sc.next();
             }
         }
+    }
+
+    public static Labirinto labirintoInstance(String filepath) throws FileNotFoundException {
+        if( instance == null ){
+            instance = new Labirinto(filepath);
+        }
+        return instance;
     }
 
     public String[][] getLabirinto() {
