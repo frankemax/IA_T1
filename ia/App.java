@@ -21,10 +21,10 @@ public class App {
         System.out.println("Digite o tamanho da populacao:");
         int tamanhoPop = sc.nextInt();
 
-        System.out.println("Saida detalhada? (true = todas geracoes, false = a cada 5)");
-        boolean detalhado = sc.nextBoolean();
+        System.out.println("Frequncia dos logs: (a cada x geracoes)");
+        int freqLog = sc.nextInt();
 
-        Genetico genetico = new Genetico(taxa, geracoes, 41, tamanhoPop, detalhado);
+        Genetico genetico = new Genetico(taxa, geracoes, 41, tamanhoPop, freqLog);
 
         AStar aStar = new AStar(new int[]{0, 0}, genetico.getExit());
 

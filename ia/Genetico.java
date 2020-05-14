@@ -17,7 +17,7 @@ public class Genetico {
     private String logLabirinto = "";
     private final Random random = new Random();
 
-    public Genetico(double mutationRate, int qtdadeDeGeracoes, int tamanhoCromossomos, int tamanhoPopulacao, boolean detalhado) throws FileNotFoundException {
+    public Genetico(double mutationRate, int qtdadeDeGeracoes, int tamanhoCromossomos, int tamanhoPopulacao, int freqLog) throws FileNotFoundException {
 
         this.mutationRate = mutationRate;
         this.tamanhoCromossomos = tamanhoCromossomos;
@@ -29,7 +29,7 @@ public class Genetico {
 
             int[] aux = escolheElitismo();
 
-            if ((i % 5 == 0 && i > 0) || detalhado) { //guarda os logs
+            if (i % freqLog == 0 && i > 0) { //guarda os logs
                 log.append("\nGeracao ").append(i).append(":\nMelhor agente:\n");
                 log.append(populacao.get(aux[0]));
                 log.append("\n").append(timesFound).append(" saidas encontrada na geracao ").append(i);
@@ -52,50 +52,44 @@ public class Genetico {
                 log.append(logLabirinto);
                 log.append("Pontuacao: ").append(populacao.get(aux[0]).get(populacao.get(aux[0]).size() - 1)).append("\nTamanho do agente: ").append(this.tamanhoCromossomos).append("\n");
                 return;
-            }
+            } //log final
+
+            removeCalcAptidao();
 
             populacaoIntermediaria = new ArrayList<>();
-            removeAll();
-
             populacaoIntermediaria.add(new ArrayList<>(populacao.get(aux[0])));
             populacaoIntermediaria.add(new ArrayList<>(populacao.get(aux[1])));
 
             crossoverTwo(aux);
 
+            int[] torneio = new int[2];
             for (int j = 0; j < (tamanhoCromossomos / 2) + 3; j++) {
 
                 aux[0] = random.nextInt(populacao.size());
                 aux[1] = random.nextInt(populacao.size());
-                int[] var = new int[2];
 
-                if (populacao.get(aux[0]).get(populacao.get(aux[0]).size() - 1) > populacao.get(aux[1]).get(populacao.get(aux[1]).size() - 1)) {
-                    var[0] = aux[0];
-                } else {
-                    var[0] = aux[1];
-                }
+                torneio[0] = (populacao.get(aux[0]).get(tamanhoCromossomos - 1) >
+                        populacao.get(aux[1]).get(tamanhoCromossomos - 1)) ? aux[0] : aux[1];
 
                 aux[0] = random.nextInt(populacao.size());
                 aux[1] = random.nextInt(populacao.size());
 
-                if (populacao.get(aux[0]).get(populacao.get(aux[0]).size() - 1) > populacao.get(aux[1]).get(populacao.get(aux[1]).size() - 1)) {
-                    var[1] = aux[0];
-                } else {
-                    var[1] = aux[1];
-                }
+                torneio[1] = (populacao.get(aux[0]).get(tamanhoCromossomos - 1) >
+                        populacao.get(aux[1]).get(tamanhoCromossomos - 1)) ? aux[0] : aux[1];
 
-                crossoverTwo(var);
+                crossoverTwo(torneio);
             }
 
             populacao = populacaoIntermediaria;
             timesFound = 0;
 
-            for (ArrayList<Integer> integers : populacao) {
-                integers.add(aptidaoCalc(integers));
+            for (ArrayList<Integer> agente : populacao) {
+                agente.add(aptidaoCalc(agente));
             }
         }
     }
 
-    private void removeAll() { // retira o resultado do calculo dos agentes
+    private void removeCalcAptidao() { // retira o resultado do calculo dos agentes
         for (ArrayList<Integer> integers : populacao) {
             integers.remove(integers.size() - 1);
         }
@@ -114,14 +108,14 @@ public class Genetico {
         this.populacao = new ArrayList<>(tamanhoPopulacao);
 
         for (int i = 0; i < tamanhoPopulacao; i++) {
-            ArrayList<Integer> list = new ArrayList<>();
+            ArrayList<Integer> agente = new ArrayList<>();
 
             for (int j = 0; j < tamanhoCromossomos; j++) {
-                list.add(random.nextInt(8));
+                agente.add(random.nextInt(8));
             }
 
-            list.add(aptidaoCalc(list));
-            populacao.add(list);
+            agente.add(aptidaoCalc(agente));
+            populacao.add(agente);
         }
     }
 
@@ -145,17 +139,25 @@ public class Genetico {
     }
 
     private void mutagenico() { //muta um dos dois ultimos cromossomos
-        for (int j = 0; j < mutationRate * tamanhoCromossomos; j++) {
+        for (int i = 0; i < mutationRate * tamanhoCromossomos; i++) {
             populacaoIntermediaria.get(populacaoIntermediaria.size() - random.nextInt(2) - 1).set(random.nextInt(tamanhoCromossomos), random.nextInt(8));
         }
     }
 
     private int[] escolheElitismo() { //retorna os dois melhores cromossomos
-        int posPai = 0;
-        int posMae = 1;
-        int valPai = populacao.get(0).get(populacao.get(0).size() - 1);
-        int valMae = populacao.get(1).get(populacao.get(1).size() - 1);
-        int atual;
+
+        int posPai, posMae, valPai, valMae, atual;
+        if (populacao.get(0).get(populacao.get(0).size() - 1) < populacao.get(1).get(populacao.get(1).size() - 1)) {
+            posPai = 1;
+            posMae = 0;
+            valPai = populacao.get(1).get(populacao.get(1).size() - 1);
+            valMae = populacao.get(0).get(populacao.get(0).size() - 1);
+        } else {
+            posPai = 0;
+            posMae = 1;
+            valPai = populacao.get(0).get(populacao.get(0).size() - 1);
+            valMae = populacao.get(1).get(populacao.get(1).size() - 1);
+        }
 
         for (int i = 0; i < populacao.size(); i++) {
             atual = populacao.get(i).get(populacao.get(i).size() - 1);
@@ -192,9 +194,8 @@ public class Genetico {
         int[] pos = {0, 0};
         int pts = 0;
 
-        for (int i = 0; i < array.size(); i++) {
+        for (int aux : array) {
 
-            int aux = array.get(i);
             String[] str = anda(pos, aux);
 
             switch (str[0]) {
@@ -284,9 +285,9 @@ public class Genetico {
         l.append("Caminho percorrido:\n(0, 0) ");
 
         loop:
-        for (int aux : array) {
-            String[] str = anda(pos, aux);
-            if (aux < 0 || aux > 7) {
+        for (int dir : array) {
+            String[] str = anda(pos, dir);
+            if (dir < 0 || dir > 7) {
                 break;
             }
             switch (str[0]) {
